@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Welcome to SmartCart - The modern, quick, and secure eCommerce platform.">
+    <title>SmartCart - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛒 SmartCart</div>
+        <nav>
+            <a href="/user-login">User Login</a>
+            <a href="/admin-login">Admin Login</a>
+        </nav>
+    </header>
+
+    <div class="container landing-hero">
+        <h1 style="margin-bottom: 10px; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Welcome to SmartCart</h1>
+        <p style="color: var(--text-muted); font-size: 18px; max-width: 600px; margin: 0 auto 40px auto;">
+            The complete, modern shopping experience with real-time carts, secure login, and verified Razorpay payment gateways.
+        </p>
+
+        <div class="landing-choices">
+            <!-- User Gateway -->
+            <div class="landing-choice">
+                <h2 style="font-size: 22px; margin-bottom: 15px;">Shop Products</h2>
+                <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 14px;">Browse electronics, apparel, and daily essentials. Manage your cart and check out securely.</p>
+                <a href="/user-login" class="btn btn-primary">Customer Portal</a>
+            </div>
+
+            <!-- Admin Gateway -->
+            <div class="landing-choice">
+                <h2 style="font-size: 22px; margin-bottom: 15px;">Store Admin</h2>
+                <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 14px;">Upload new inventory, search orders, replace images, and configure store options.</p>
+                <a href="/admin-login" class="btn btn-secondary">Admin Portal</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-brand"><strong>SmartCart</strong><p>Big choice. Bright prices. Easy shopping.</p></div>
+        <div class="footer-links"><a href="/about">About</a><a href="/contact">Contact & Support</a><a href="/user-login">Customer login</a><a href="/admin-login">Admin login</a></div>
+        <span>&copy; 2026 SmartCart. Crafted for visual and operational excellence.</span>
+    </footer>
+
+</body>
+</html>

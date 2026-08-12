@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products - SmartCart Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=admin-menu-2">
+</head>
+<body>
+
+    <header class="admin-header">
+        <div class="logo">🛒 SmartCart Dashboard</div>
+        <button class="admin-menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="admin-sidebar" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="admin-account-nav" aria-label="Admin account" style="display: flex; align-items: center; gap: 15px;">
+            {% if session.get('admin_image') %}
+                <img src="/static/uploads/admin_profiles/{{ session.get('admin_image') }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);">
+            {% endif %}
+            <span style="font-weight: 500; color: var(--text-main);">{{ session.get('admin_name') }} (Admin)</span>
+            <a href="/admin-logout" class="btn btn-outline btn-sm" style="width: auto; padding: 6px 12px; font-size: 13px;">Logout</a>
+        </nav>
+    </header>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar" id="admin-sidebar" aria-label="Admin navigation">
+            <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px;">Management</h3>
+            <ul class="sidebar-menu">
+                <li><a href="/admin-dashboard">📊 Overview</a></li>
+                <li><a href="/admin/item-list" class="active">📦 View Products</a></li>
+                <li><a href="/admin/add-item">➕ Add Product</a></li>
+                <li><a href="/admin/profile">👤 Profile Settings</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-container">
+                  {% for category, message in messages %}
+                    <div class="flash-message success">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+                <h2>Catalog Inventory</h2>
+                <a href="/admin/add-item" class="btn btn-primary btn-sm" style="width: auto;">➕ Add New Product</a>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="filters-bar">
+                <!-- Search Form -->
+                <form method="GET" action="/admin/item-list">
+                    <input type="text" name="search" class="form-control" placeholder="Search by product name..." value="{{ request.args.get('search', '') }}" style="padding: 10px 14px; font-size: 14px;">
+                    {% if request.args.get('category') %}
+                        <input type="hidden" name="category" value="{{ request.args.get('category') }}">
+                    {% endif %}
+                    <button type="submit" class="btn btn-secondary btn-sm" style="padding: 10px 18px;">Search</button>
+                </form>
+
+                <!-- Category Filter -->
+                <form method="GET" action="/admin/item-list">
+                    {% if request.args.get('search') %}
+                        <input type="hidden" name="search" value="{{ request.args.get('search') }}">
+                    {% endif %}
+                    <select name="category" class="form-control" style="padding: 10px 14px; font-size: 14px; width: 180px; display: inline-block;">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.category }}" {% if request.args.get('category') == cat.category %} selected {% endif %}>
+                                {{ cat.category }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-outline btn-sm" style="padding: 10px 18px;">Filter</button>
+                </form>
+            </div>
+
+            <!-- Products Table -->
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th style="width: 100px;">Image</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th style="width: 250px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if products|length == 0 %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                    No products found matching the criteria.
+                                </td>
+                            </tr>
+                        {% else %}
+                            {% for product in products %}
+                            <tr>
+                                <td>{{ product.product_id }}</td>
+                                <td>
+                                    <div style="width: 60px; height: 60px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
+                                        <img src="/static/uploads/product_images/{{ product.image }}" style="max-width: 100%; max-height: 100%; object-fit: contain; padding: 4px;">
+                                    </div>
+                                </td>
+                                <td style="font-weight: 600;">{{ product.name }}</td>
+                                <td><span style="background: #f1f5f9; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--text-muted);">{{ product.category }}</span></td>
+                                <td style="font-weight: 700; color: var(--primary);">₹{{ "%.2f"|format(product.price) }}</td>
+                                <td>
+                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                        <a href="/admin/view-item/{{ product.product_id }}" class="btn btn-outline btn-sm" style="padding: 6px 12px; font-size: 12px;">View</a>
+                                        <a href="/admin/update-item/{{ product.product_id }}" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 12px; background-color: var(--secondary);">Edit</a>
+                                        <a href="/admin/delete-item/{{ product.product_id }}" class="btn btn-danger btn-sm" style="padding: 6px 12px; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this product? All image files and associations will be permanently removed.')">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const menuButton = document.querySelector('.admin-menu-toggle');
+        const sidebar = document.querySelector('#admin-sidebar');
+
+        menuButton.addEventListener('click', () => {
+            const isOpen = sidebar.classList.toggle('is-open');
+            menuButton.classList.toggle('is-open', isOpen);
+            menuButton.setAttribute('aria-expanded', isOpen);
+            document.body.classList.toggle('admin-menu-open', isOpen);
+        });
+    </script>
+</body>
+</html>

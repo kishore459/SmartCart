@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Checkout Payment - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="/user-dashboard" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; font-size: 24px;">🛒 SmartCart</a>
+        </div>
+        <nav>
+            <a href="/user-dashboard">Home</a>
+            <a href="/user/cart">Back to Cart</a>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 550px; margin-top: 60px;">
+        <div style="background: white; border: 1px solid var(--border-color); padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); text-align: center;">
+            <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
+            <h2>Secure Checkout</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 25px;">You are paying through Razorpay's secure sandbox server environment.</p>
+
+            <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 20px; border-radius: var(--radius-md); margin-bottom: 30px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="color: var(--text-muted); font-weight: 500;">Order Bill Ref:</span>
+                    <span style="font-family: monospace; font-weight: 600;">{{ order_id }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 10px;">
+                    <span style="font-weight: 600; color: var(--text-main);">Amount Payable:</span>
+                    <span style="font-weight: 700; color: var(--primary); font-size: 18px;">₹{{ "%.2f"|format(amount) }}</span>
+                </div>
+            </div>
+
+            <button id="rzp-button" class="btn btn-primary" style="padding: 14px; font-size: 16px;">💳 Pay Now (₹{{ "%.2f"|format(amount) }})</button>
+            
+            <p style="color: var(--text-muted); font-size: 12px; margin-top: 20px;">
+                Payments are processed using test UPI / Cards / Net Banking simulators. No real money will be charged.
+            </p>
+        </div>
+    </div>
+
+    <!-- Razorpay Checkout Integration Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+    var options = {
+        "key": "{{ key_id }}",
+        "amount": "{{ amount_paise }}", // amount in paise
+        "currency": "INR",
+        "name": "SmartCart Store",
+        "description": "Order Payment #{{ order_id }}",
+        "order_id": "{{ order_id }}",
+        "handler": function (response) {
+            // Build a dynamic form and submit signature values securely via POST
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/verify-payment";
+
+            var fields = {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+            };
+
+            for (var name in fields) {
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = fields[name];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        },
+        "prefill": {
+            "name": "{{ session.get('user_name', '') }}",
+            "email": "{{ session.get('user_email', '') }}"
+        },
+        "theme": {
+            "color": "#6366f1"
+        }
+    };
+
+    var rzp = new Razorpay(options);
+    document.getElementById('rzp-button').onclick = function(e){
+        rzp.open();
+        e.preventDefault();
+    }
+    </script>
+
+    <footer>
+        &copy; 2026 SmartCart Systems. Secure checkout processing.
+    </footer>
+
+</body>
+</html>

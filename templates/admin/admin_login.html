@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛒 SmartCart Admin</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/admin-signup">Register Admin</a>
+        </nav>
+    </header>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Admin Login</h2>
+
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-container">
+                  {% for category, message in messages %}
+                    <div class="flash-message danger">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/admin-login">
+                <div class="form-group">
+                    <label for="email">Admin Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="admin@smartcart.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Login</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted);">
+                New admin? <a href="/admin-signup" style="font-weight: 500;">Register here</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>

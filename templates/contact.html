@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact SmartCart Support</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="logo">SmartCart</div>
+        <nav><a href="/">Home</a><a href="/about">About</a></nav>
+    </header>
+    <main class="container info-page">
+        <section class="info-hero">
+            <p class="info-kicker">HELP & SUPPORT</p>
+            <h1>How can we help?</h1>
+            <p>For orders, payments, account access, or any issue, email our support team. Please include your order ID when available.</p>
+        </section>
+        <section class="support-card">
+            <span class="support-icon" aria-hidden="true">✉</span>
+            <div><h2>Email support</h2><p>We will help you with any SmartCart issue.</p></div>
+            <a class="btn btn-primary" href="mailto:{{ support_email }}?subject=SmartCart%20Support%20Request">{{ support_email }}</a>
+        </section>
+    </main>
+</body>
+</html>

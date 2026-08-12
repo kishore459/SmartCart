@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Catalog - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=mobile-nav-3">
+</head>
+<body>
+
+    <header class="store-header catalog-header">
+        <div class="logo">🛒 SmartCart</div>
+        <button class="store-menu-toggle" type="button" aria-label="Open menu" aria-controls="store-navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <a class="catalog-mobile-cart" href="/user/cart">Cart <span class="cart-badge">{{ session.get('cart')|length if session.get('cart') else 0 }}</span></a>
+        <nav class="store-nav" id="store-navigation" aria-label="Main navigation">
+            <a href="/user-dashboard">Dashboard</a>
+            <a href="/user/products" class="active">Products</a>
+            <a href="/user/my-orders">My Orders</a>
+            <a href="/user/cart">
+                Cart <span id="cart-count" class="cart-badge">{{ session.get('cart')|length if session.get('cart') else 0 }}</span>
+            </a>
+            <a href="/user-logout" class="btn btn-outline btn-sm" style="width: auto;">Logout</a>
+        </nav>
+        <div class="header-search store-search catalog-search">
+            <form method="GET" action="/user/products">
+                <input type="search" name="search" placeholder="Search products..." value="{{ request.args.get('search', '') }}" aria-label="Search products">
+                <button type="submit" aria-label="Search">&#128269;</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="flash-message danger">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2>Explore Products</h2>
+                <p style="color: var(--text-muted); font-size: 14px;">Select from our premium catalog collection</p>
+            </div>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="filters-bar">
+            <!-- Search Form -->
+            <form method="GET" action="/user/products">
+                <label class="mobile-control-label" for="catalog-search-field">Find a product</label>
+                <input type="text" id="catalog-search-field" name="search" class="form-control" placeholder="Type product name" value="{{ request.args.get('search', '') }}" style="padding: 10px 14px; font-size: 14px;">
+                {% if request.args.get('category') %}
+                    <input type="hidden" name="category" value="{{ request.args.get('category') }}">
+                {% endif %}
+                <button type="submit" class="btn btn-secondary btn-sm" style="padding: 10px 18px;">Find products</button>
+            </form>
+
+            <!-- Category Filter -->
+            <form method="GET" action="/user/products">
+                <label class="mobile-control-label" for="catalog-category">Choose a category</label>
+                {% if request.args.get('search') %}
+                    <input type="hidden" name="search" value="{{ request.args.get('search') }}">
+                {% endif %}
+                <select id="catalog-category" name="category" class="form-control" style="padding: 10px 14px; font-size: 14px; width: 180px; display: inline-block;">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.category }}" {% if request.args.get('category') == cat.category %} selected {% endif %}>
+                            {{ cat.category }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-outline btn-sm" style="padding: 10px 18px;">Show category</button>
+            </form>
+        </div>
+
+        <!-- Product Cards Grid -->
+        <div class="product-grid">
+            {% if products|length == 0 %}
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 50px 0;">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🔍</div>
+                    <h3>No products found!</h3>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-top: 5px;">Try adjusting your filters or keywords search.</p>
+                </div>
+            {% else %}
+                {% for product in products %}
+                <div class="product-card">
+                    <div class="product-img-wrapper">
+                        <img src="/static/uploads/product_images/{{ product.image }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category">{{ product.category }}</span>
+                        <h3 class="product-title">{{ product.name }}</h3>
+                        <div class="product-price">₹{{ "%.2f"|format(product.price) }}</div>
+                        <div class="product-actions">
+                            <a href="/user/product/{{ product.product_id }}" class="btn btn-outline btn-sm" style="flex-grow: 1;">Details</a>
+                            <button onclick="addToCart({{ product.product_id }})" class="btn btn-primary btn-sm" style="flex-grow: 1;">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Custom Toast Message Popup Container -->
+    <div id="toast-message" class="toast-msg"></div>
+
+    <footer>
+        &copy; 2026 SmartCart Systems.
+    </footer>
+
+    <script>
+    const storeMenuButton = document.querySelector('.store-menu-toggle');
+    const storeNavigation = document.querySelector('#store-navigation');
+
+    storeMenuButton.addEventListener('click', () => {
+        const isOpen = storeNavigation.classList.toggle('is-open');
+        storeMenuButton.classList.toggle('is-open', isOpen);
+        storeMenuButton.setAttribute('aria-expanded', isOpen);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (window.innerWidth <= 650 && storeNavigation.classList.contains('is-open') && !storeNavigation.contains(event.target) && !storeMenuButton.contains(event.target)) {
+            storeMenuButton.click();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && storeNavigation.classList.contains('is-open')) storeMenuButton.click();
+    });
+
+    function addToCart(productId) {
+        fetch(`/user/add-to-cart-ajax/${productId}`)
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/user-login';
+                        throw new Error('Not logged in');
+                    }
+                    throw new Error('Network error');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Update badge cart count
+                document.querySelectorAll('.cart-badge').forEach(badge => badge.innerText = data.cart_count);
+
+                // Show toast message
+                const toast = document.getElementById("toast-message");
+                toast.innerHTML = `<span>✔</span> ${data.message}`;
+                toast.classList.add("show");
+
+                // Clear toast after 3s
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 3000);
+            })
+            .catch(error => console.error("Error adding to cart:", error));
+    }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders History - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .order-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: var(--transition);
+        }
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header containing Navbar Search -->
+    <header>
+        <div class="logo">
+            <a href="/user-dashboard" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; font-size: 24px;">🛒 SmartCart</a>
+        </div>
+        
+        <!-- Navbar Search Pill -->
+        <div class="header-search">
+            <form method="GET" action="/user-dashboard">
+                <input type="text" name="search" placeholder="Search product name..." value="{{ request.args.get('search', '') }}">
+                <button type="submit">🔍</button>
+            </form>
+        </div>
+
+        <nav>
+            <a href="/user-dashboard">Home</a>
+            <a href="/user/my-orders" class="active">My Orders</a>
+            <a href="/user/cart">
+                Cart <span id="cart-count" class="cart-badge">{{ session.get('cart')|length if session.get('cart') else 0 }}</span>
+            </a>
+            <a href="/user-logout" class="btn btn-outline btn-sm" style="width: auto;">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 900px;">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="flash-message danger">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <h2 style="margin-bottom: 25px;">📦 My Orders History</h2>
+
+        <div style="margin: -10px 0 25px;">
+            <a href="{{ url_for('user_dashboard') }}" class="btn btn-outline btn-sm" style="width: auto;">&larr; Back to Dashboard</a>
+        </div>
+
+        {% if orders|length == 0 %}
+            <div style="background: white; border: 1px solid var(--border-color); padding: 50px; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-sm);">
+                <div style="font-size: 50px; margin-bottom: 15px;">📦</div>
+                <h3>You haven't placed any orders yet!</h3>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px; margin-bottom: 25px;">Browse our catalog and add items to your cart to get started.</p>
+                <a href="/user/products" class="btn btn-primary" style="width: auto; padding: 12px 30px;">Start Shopping Now</a>
+            </div>
+        {% else %}
+            {% for order in orders %}
+            <div class="order-card">
+                <div>
+                    <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text-main);">Order ID: #{{ order.order_id }}</h3>
+                    <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                        <p><strong>Order Timestamp:</strong> {{ order.created_at }}</p>
+                        <p><strong>Payment Status:</strong> <span style="color: var(--success); font-weight: 600; text-transform: uppercase;">{{ order.payment_status }}</span></p>
+                        <p><strong>Gateway Ref:</strong> {{ order.razorpay_payment_id }}</p>
+                    </div>
+                </div>
+
+                <div class="order-card-actions" style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                    <div style="font-size: 22px; font-weight: 700; color: var(--primary);">₹{{ "%.2f"|format(order.amount) }}</div>
+                    <div class="order-card-actions-links">
+                        <a href="/user/order-success/{{ order.order_id }}" class="btn btn-secondary btn-sm" style="background-color: var(--secondary); padding: 8px 16px; width: auto;">🧾 View Invoice</a>
+                        <a href="/user/order/download-invoice/{{ order.order_id }}" class="btn btn-primary btn-sm" style="background-color: var(--success); padding: 8px 16px; width: auto;">📥 Download</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <footer>
+        &copy; 2026 SmartCart Systems. Order tracking services.
+    </footer>
+
+</body>
+</html>

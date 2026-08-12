@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Accepted - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="/user-dashboard" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; font-size: 24px;">🛒 SmartCart</a>
+        </div>
+        <nav>
+            <a href="/user-dashboard">Home</a>
+            <a href="/user/my-orders">My Orders</a>
+        </nav>
+    </header>
+
+    <div class="success-container">
+        <div class="success-icon">🎉</div>
+        <h2>Payment Processed</h2>
+        <p style="color: var(--text-muted); margin-bottom: 25px;">The payment gateway has confirmed receipt of your payment.</p>
+
+        <div class="order-badge">
+            Payment ID: {{ payment_id }}<br>
+            Order ID: {{ order_id }}
+        </div>
+
+        <div style="margin-top: 25px;">
+            <a href="/user/products" class="btn btn-primary" style="width: auto; padding: 12px 30px;">Continue Shopping</a>
+        </div>
+    </div>
+
+</body>
+</html>

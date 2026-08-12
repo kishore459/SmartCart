@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCart Invoice SC-{{ order.order_id }}</title>
+    <style>
+        :root { --ink:#151b2b; --muted:#677086; --line:#dfe4ec; --brand:#2463eb; --soft:#f6f8fc; --green:#087c53; }
+        * { box-sizing:border-box; } body { margin:0; background:#eef1f6; color:var(--ink); font:14px/1.5 Arial,Helvetica,sans-serif; }
+        .paper { max-width:900px; margin:28px auto; padding:38px 42px; background:#fff; box-shadow:0 8px 32px rgba(23,34,57,.13); }
+        .head { display:flex; justify-content:space-between; gap:30px; padding-bottom:23px; border-bottom:2px solid var(--ink); }
+        .brand { margin:0; color:var(--brand); font-size:29px; letter-spacing:-1px; } .brand span { color:var(--ink); }
+        .sub { margin:4px 0 0; color:var(--muted); font-size:13px; } .invoice-title { text-align:right; } .invoice-title h1 { margin:0; font-size:25px; }
+        .invoice-title p { margin:4px 0 0; color:var(--muted); } .meta { display:grid; grid-template-columns:1fr 1fr; gap:0; margin:24px 0; border:1px solid var(--line); }
+        .meta > div { padding:17px; } .meta > div + div { border-left:1px solid var(--line); } .meta h2 { margin:0 0 9px; font-size:12px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+        .meta p { margin:3px 0; overflow-wrap:anywhere; } .address { min-height:124px; } .status { color:var(--green); font-weight:700; text-transform:uppercase; }
+        .section-label { margin:25px 0 9px; font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+        .items-scroll { overflow-x:auto; } table { width:100%; border-collapse:collapse; } th { padding:11px 9px; background:#242d42; color:#fff; font-size:12px; text-align:left; } td { padding:13px 9px; border-bottom:1px solid var(--line); vertical-align:top; } .number { text-align:right; } .center { text-align:center; }
+        .product { font-weight:700; } .product small { display:block; margin-top:2px; color:var(--muted); font-weight:400; }
+        .totals { width:330px; margin:20px 0 0 auto; } .total-line { display:flex; justify-content:space-between; padding:7px 0; color:var(--muted); } .grand { margin-top:5px; padding:13px 12px; color:var(--ink); background:#eaf0ff; border:1px solid #cddcff; font-size:17px; font-weight:700; } .grand span:last-child { color:var(--brand); }
+        .note { margin-top:29px; padding:18px; background:var(--soft); border-left:4px solid var(--brand); } .note h2 { margin:0 0 5px; font-size:16px; } .note p { margin:4px 0; color:#48546a; } .motivation { font-style:italic; }
+        .footer { display:flex; justify-content:space-between; gap:15px; margin-top:32px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; } .print { display:block; margin:24px auto 0; padding:11px 21px; border:0; border-radius:6px; color:#fff; background:var(--brand); font-weight:700; cursor:pointer; }
+        @media (max-width:640px) { .paper{margin:0;padding:24px 17px}.head{display:block}.invoice-title{text-align:left;margin-top:18px}.meta{grid-template-columns:1fr}.meta>div+div{border-left:0;border-top:1px solid var(--line)}.totals{width:100%}.footer{display:block}.footer p{margin:5px 0} table{min-width:500px} th,td{padding:9px 5px;font-size:12px} }
+        @media print { body{background:#fff}.paper{max-width:none;margin:0;box-shadow:none}.print{display:none} }
+    </style>
+</head>
+<body>
+    <main class="paper">
+        <header class="head">
+            <div><h1 class="brand">Smart<span>Cart</span></h1><p class="sub">Your everyday shopping destination</p></div>
+            <div class="invoice-title"><h1>Tax Invoice</h1><p>Invoice No: SC-{{ order.order_id }}</p><p>Issued: {{ order.created_at.strftime('%d %b %Y') if order.created_at.strftime else order.created_at }}</p></div>
+        </header>
+
+        <section class="meta">
+            <div class="address"><h2>Sold by</h2><p><strong>SmartCart Marketplace</strong></p><p>Online Retail Store</p><p class="sub">For support: support@smartcart.com</p></div>
+            <div class="address"><h2>Shipping address</h2><p><strong>{{ customer_name }}</strong></p>{% if order.customer_phone %}<p>{{ order.customer_phone }}</p>{% endif %}{% if order.delivery_address %}<p>{{ order.delivery_address }}</p><p>{{ order.pin_code }}</p>{% else %}<p class="sub">Address was not captured for this earlier order.</p>{% endif %}</div>
+        </section>
+
+        <section class="meta">
+            <div><h2>Order details</h2><p><strong>Order ID:</strong> #{{ order.order_id }}</p><p><strong>Order date:</strong> {{ order.created_at }}</p><p><strong>Delivery:</strong> {{ order.delivery_type|title if order.delivery_type else 'Standard' }}</p></div>
+            <div><h2>Payment details</h2><p><strong>Method:</strong> {{ 'Cash on Delivery' if order.payment_method == 'cash_on_delivery' else 'Online Payment' }}</p><p><strong>Payment status:</strong> <span class="status">{{ order.payment_status }}</span></p><p><strong>Payment reference:</strong> {{ order.razorpay_payment_id }}</p></div>
+        </section>
+
+        <h2 class="section-label">Items ordered</h2>
+        <div class="items-scroll"><table>
+            <thead><tr><th>#</th><th>Product</th><th class="center">Qty</th><th class="number">Unit price</th><th class="number">Total</th></tr></thead>
+            <tbody>{% for item in items %}<tr><td>{{ loop.index }}</td><td class="product">{{ item.product_name }}<small>SmartCart product</small></td><td class="center">{{ item.quantity }}</td><td class="number">&#8377;{{ '%.2f'|format(item.price) }}</td><td class="number">&#8377;{{ '%.2f'|format(item.price * item.quantity) }}</td></tr>{% endfor %}</tbody>
+        </table></div>
+
+        <section class="totals"><div class="total-line"><span>Items subtotal</span><span>&#8377;{{ '%.2f'|format(items_total) }}</span></div><div class="total-line"><span>Delivery charges</span><span>{% if delivery_fee %}&#8377;{{ '%.2f'|format(delivery_fee) }}{% else %}Free{% endif %}</span></div><div class="total-line grand"><span>{% if order.payment_method == 'cash_on_delivery' %}Amount payable{% else %}Grand total paid{% endif %}</span><span>&#8377;{{ '%.2f'|format(order.amount) }}</span></div></section>
+
+        <section class="note"><h2>Thank you for shopping with SmartCart!</h2><p>We appreciate your order and look forward to serving you again.</p><p class="motivation">{{ motivation }}</p></section>
+        <footer class="footer"><p>This is a computer-generated invoice and does not require a signature.</p><p>Keep this invoice for your order records.</p></footer>
+        <button class="print" onclick="window.print()">Print / Save as PDF</button>
+    </main>
+</body>
+</html>

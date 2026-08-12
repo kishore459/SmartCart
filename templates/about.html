@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="logo">SmartCart</div>
+        <nav><a href="/">Home</a><a href="/contact">Contact support</a></nav>
+    </header>
+    <main class="container info-page">
+        <section class="info-hero">
+            <p class="info-kicker">ABOUT SMARTCART</p>
+            <h1>Shopping made simple.</h1>
+            <p>SmartCart helps customers discover products, add them to a cart, and place orders with confidence.</p>
+        </section>
+        <section class="info-grid">
+            <article><h2>Easy to use</h2><p>Clear product details and simple steps make shopping comfortable for everyone.</p></article>
+            <article><h2>Secure checkout</h2><p>Your order journey is designed to be clear from cart to payment confirmation.</p></article>
+            <article><h2>Here to help</h2><p>Need help with an order or account? Our support team is only an email away.</p></article>
+        </section>
+        <a class="btn btn-primary info-cta" href="/contact">Contact support</a>
+    </main>
+</body>
+</html>

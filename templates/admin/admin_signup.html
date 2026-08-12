@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Signup - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛒 SmartCart Admin</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/admin-login">Login</a>
+        </nav>
+    </header>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Admin Signup</h2>
+
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-container">
+                  {% for category, message in messages %}
+                    <div class="flash-message danger">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/admin-signup">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Enter Full Name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="admin@smartcart.com" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Send OTP</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted);">
+                Already have an admin account? <a href="/admin-login" style="font-weight: 500;">Login Here</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>

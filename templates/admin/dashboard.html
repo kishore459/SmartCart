@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="admin-header">
+        <div class="logo">🛒 SmartCart Dashboard</div>
+        <button class="admin-menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="admin-sidebar" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="admin-account-nav" aria-label="Admin account" style="display: flex; align-items: center; gap: 15px;">
+            {% if session.get('admin_image') %}
+                <img src="/static/uploads/admin_profiles/{{ session.get('admin_image') }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);">
+            {% endif %}
+            <span style="font-weight: 500; color: var(--text-main);">{{ session.get('admin_name') }} (Admin)</span>
+            <a href="/admin-logout" class="btn btn-outline btn-sm" style="width: auto; padding: 6px 12px; font-size: 13px;">Logout</a>
+        </nav>
+    </header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="admin-sidebar" aria-label="Admin navigation">
+            <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px;">Management</h3>
+            <ul class="sidebar-menu">
+                <li><a href="/admin-dashboard" class="active">📊 Overview</a></li>
+                <li><a href="/admin/item-list">📦 View Products</a></li>
+                <li><a href="/admin/add-item">➕ Add Product</a></li>
+                <li><a href="/admin/profile">👤 Profile Settings</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-container">
+                  {% for category, message in messages %}
+                    <div class="flash-message success">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(14, 165, 233, 0.1)); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); margin-bottom: 30px;">
+                <h1 style="margin-bottom: 8px;">Welcome Back, {{ admin_name }}!</h1>
+                <p style="color: var(--text-muted);">Manage your products, view orders, and configure settings from this panel.</p>
+            </div>
+
+            <!-- Stats Overview Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 style="font-size: 14px; font-weight: 500; color: var(--text-muted);">Catalog Items</h3>
+                    <div class="stat-val">Products</div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;"><a href="/admin/item-list">Manage inventory &rarr;</a></p>
+                </div>
+                <div class="stat-card">
+                    <h3 style="font-size: 14px; font-weight: 500; color: var(--text-muted);">Store Actions</h3>
+                    <div class="stat-val">Uploads</div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;"><a href="/admin/add-item">Add new items &rarr;</a></p>
+                </div>
+                <div class="stat-card">
+                    <h3 style="font-size: 14px; font-weight: 500; color: var(--text-muted);">Admin Profile</h3>
+                    <div class="stat-val">Profile</div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;"><a href="/admin/profile">Update info &rarr;</a></p>
+                </div>
+            </div>
+
+            <h2>Quick Start Actions</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 15px;">
+                <a href="/admin/add-item" style="background: white; border: 1px solid var(--border-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">📦</div>
+                    <h3 style="font-size: 16px; margin-bottom: 4px; color: var(--text-main);">Add New Product</h3>
+                    <p style="font-size: 12px; color: var(--text-muted);">Upload description & images</p>
+                </a>
+                <a href="/admin/item-list" style="background: white; border: 1px solid var(--border-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">🔍</div>
+                    <h3 style="font-size: 16px; margin-bottom: 4px; color: var(--text-main);">View Catalog</h3>
+                    <p style="font-size: 12px; color: var(--text-muted);">Search, edit, & delete</p>
+                </a>
+                <a href="/admin/profile" style="background: white; border: 1px solid var(--border-color); padding: 20px; border-radius: var(--radius-md); text-align: center; box-shadow: var(--shadow-sm); display: block;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">⚙️</div>
+                    <h3 style="font-size: 16px; margin-bottom: 4px; color: var(--text-main);">Profile Settings</h3>
+                    <h4 style="font-size: 12px; color: var(--text-muted); font-weight: normal;">Change avatar & password</h4>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const menuButton = document.querySelector('.admin-menu-toggle');
+        const sidebar = document.querySelector('#admin-sidebar');
+
+        menuButton.addEventListener('click', () => {
+            const isOpen = sidebar.classList.toggle('is-open');
+            menuButton.classList.toggle('is-open', isOpen);
+            menuButton.setAttribute('aria-expanded', isOpen);
+            document.body.classList.toggle('admin-menu-open', isOpen);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (window.innerWidth <= 800 && sidebar.classList.contains('is-open') && !sidebar.contains(event.target) && !menuButton.contains(event.target)) {
+                sidebar.classList.remove('is-open');
+                menuButton.classList.remove('is-open');
+                menuButton.setAttribute('aria-expanded', 'false');
+                document.body.classList.remove('admin-menu-open');
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && sidebar.classList.contains('is-open')) {
+                menuButton.click();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Copy these lines into the WSGI configuration file created by PythonAnywhere.
+# Change YOUR_USERNAME to your PythonAnywhere username.
+import os
+import sys
+
+project_home = '/home/YOUR_USERNAME/SMARTCART-2'
+if project_home not in sys.path:
+    sys.path.insert(0, project_home)
+
+# Keep the SQLite data file in your home directory so it survives code updates.
+os.environ['SMARTCART_DATABASE_PATH'] = '/home/YOUR_USERNAME/smartcart.db'
+
+from app import app as application

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Shop SmartCart products.">
+    <title>SmartCart | Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=mobile-nav-3">
+</head>
+<body>
+    <header class="store-header">
+        <a class="store-logo" href="{{ url_for('user_dashboard') }}">Smart<span>Cart</span></a>
+        <button class="store-menu-toggle" type="button" aria-label="Open menu" aria-controls="store-navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="store-nav" id="store-navigation" aria-label="Main navigation">
+            <a href="{{ url_for('user_dashboard') }}" class="active">Home</a>
+            <a href="{{ url_for('user_products') }}">Products</a>
+            <a href="{{ url_for('my_orders') }}">My Orders</a>
+        </nav>
+        <div class="header-search store-search">
+            <form method="GET" action="{{ url_for('user_dashboard') }}">
+                <input type="search" name="search" placeholder="Search products..." value="{{ request.args.get('search', '') }}" aria-label="Search products">
+                <button type="submit" aria-label="Search">&#128269;</button>
+            </form>
+        </div>
+        <div class="store-actions">
+            <a class="store-cart" href="{{ url_for('view_cart') }}">&#128722; Cart <span id="cart-count" class="cart-badge">{{ session.get('cart')|length if session.get('cart') else 0 }}</span></a>
+            <a class="store-profile" href="{{ url_for('user_profile') }}" title="Profile settings">
+                {% if session.get('user_image') %}
+                    <img src="{{ url_for('static', filename='uploads/user_profiles/' ~ session.get('user_image')) }}" alt="">
+                {% else %}
+                    <span class="profile-initial">{{ session.get('user_name', 'U')[0]|upper }}</span>
+                {% endif %}
+                <span>{{ session.get('user_name', 'Profile').split(' ')[0] }}</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="container storefront">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="storefront-heading">
+            <div>
+                <h1>Featured products</h1>
+                <p>Find something you love from our latest collection.</p>
+            </div>
+            <form method="GET" action="{{ url_for('user_dashboard') }}" class="category-filter">
+                {% if request.args.get('search') %}<input type="hidden" name="search" value="{{ request.args.get('search') }}">{% endif %}
+                <select name="category" aria-label="Filter by category" onchange="this.form.submit()">
+                    <option value="">All products</option>
+                    {% for cat in categories %}<option value="{{ cat.category }}" {% if request.args.get('category') == cat.category %}selected{% endif %}>{{ cat.category }}</option>{% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <div class="product-grid">
+            {% if products|length == 0 %}
+                <div class="store-empty">
+                    <h2>No products found</h2>
+                    <p>Try another search or category.</p>
+                </div>
+            {% else %}
+                {% for product in products %}
+                <article class="product-card">
+                    <div class="product-img-wrapper">
+                        <img src="{{ url_for('static', filename='uploads/product_images/' ~ product.image) }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category">{{ product.category }}</span>
+                        <h2 class="product-title">{{ product.name }}</h2>
+                        <div class="product-price">&#8377;{{ "%.2f"|format(product.price) }}</div>
+                        <div class="product-actions">
+                            <button type="button" onclick="addToCart({{ product.product_id }})" class="btn btn-primary btn-sm">Add to Cart</button>
+                            <a href="{{ url_for('user_product_details', product_id=product.product_id) }}" class="btn btn-outline btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </main>
+
+    <div id="toast-message" class="toast-msg" aria-live="polite"></div>
+
+    <script>
+    const storeMenuButton = document.querySelector('.store-menu-toggle');
+    const storeNavigation = document.querySelector('#store-navigation');
+
+    storeMenuButton.addEventListener('click', () => {
+        const isOpen = storeNavigation.classList.toggle('is-open');
+        storeMenuButton.classList.toggle('is-open', isOpen);
+        storeMenuButton.setAttribute('aria-expanded', isOpen);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (window.innerWidth <= 650 && storeNavigation.classList.contains('is-open') && !storeNavigation.contains(event.target) && !storeMenuButton.contains(event.target)) {
+            storeMenuButton.click();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && storeNavigation.classList.contains('is-open')) storeMenuButton.click();
+    });
+
+    function addToCart(productId) {
+        fetch(`/user/add-to-cart-ajax/${productId}`)
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) window.location.href = '/user-login';
+                    throw new Error('Unable to add item');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('cart-count').innerText = data.cart_count;
+                const toast = document.getElementById('toast-message');
+                toast.textContent = data.message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            })
+            .catch(() => {
+                const toast = document.getElementById('toast-message');
+                toast.textContent = 'Unable to add this item to the cart.';
+                toast.classList.add('show');
+            });
+    }
+    </script>
+</body>
+</html>

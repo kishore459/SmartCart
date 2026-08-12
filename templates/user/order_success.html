@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed #{{ order.order_id }} - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .invoice-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .invoice-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .invoice-details div p {
+            margin-bottom: 6px;
+        }
+        .invoice-total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header containing Navbar Search -->
+    <header>
+        <div class="logo">
+            <a href="/user-dashboard" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; font-size: 24px;">🛒 SmartCart</a>
+        </div>
+        
+        <!-- Navbar Search Pill -->
+        <div class="header-search">
+            <form method="GET" action="/user-dashboard">
+                <input type="text" name="search" placeholder="Search product name..." value="{{ request.args.get('search', '') }}">
+                <button type="submit">🔍</button>
+            </form>
+        </div>
+
+        <nav>
+            <a href="/user-dashboard">Home</a>
+            <a href="/user/my-orders" class="active">My Orders</a>
+            <a href="/user/cart">Cart</a>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 800px;">
+        <!-- Flash Message for Success placement -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="flash-message success">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="invoice-card">
+            <div class="invoice-header">
+                <div>
+                    <h2 style="color: var(--success); margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">🎉 Order Confirmed!</h2>
+                    <p style="color: var(--text-muted); font-size: 14px;">Thank you for shopping with us.</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-main);">SmartCart Invoice</div>
+                    <p style="color: var(--text-muted); font-size: 13px;">Receipt ID: #{{ order.order_id }}</p>
+                </div>
+            </div>
+
+            <div class="invoice-details">
+                <div>
+                    <h3 style="font-size: 14px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Order Details</h3>
+                    <p><strong>Order Reference ID:</strong> {{ order.order_id }}</p>
+                    <p><strong>Order Timestamp:</strong> {{ order.created_at }}</p>
+                    <p><strong>Payment Status:</strong> <span style="color: var(--success); font-weight: 600; text-transform: uppercase;">{{ order.payment_status }}</span></p>
+                </div>
+                <div>
+                    <h3 style="font-size: 14px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Gateway Reference</h3>
+                    <p><strong>Razorpay Order ID:</strong> {{ order.razorpay_order_id }}</p>
+                    <p><strong>Razorpay Payment ID:</strong> {{ order.razorpay_payment_id }}</p>
+                </div>
+            </div>
+
+            <h3 style="font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Order Summary</h3>
+            <div class="table-responsive" style="border-radius: var(--radius-sm); border: 1px solid var(--border-color); box-shadow: none; margin-bottom: 10px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th style="width: 100px; text-align: center;">Qty</th>
+                            <th style="width: 150px; text-align: right;">Unit Price</th>
+                            <th style="width: 150px; text-align: right;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for it in items %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ it.product_name }}</td>
+                            <td style="text-align: center;">{{ it.quantity }}</td>
+                            <td style="text-align: right;">₹{{ "%.2f"|format(it.price) }}</td>
+                            <td style="text-align: right; font-weight: 700; color: var(--primary);">₹{{ "%.2f"|format(it.price * it.quantity) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="invoice-total-row">
+                Amount Paid: ₹{{ "%.2f"|format(order.amount) }}
+            </div>
+        </div>
+
+        <div class="page-action-row" style="justify-content: center; margin-top: 10px;">
+            <a href="/user/products" class="btn btn-primary" style="width: auto; padding: 12px 30px;">🛍 Continue Shopping</a>
+            <a href="/user/order/download-invoice/{{ order.order_id }}" class="btn btn-secondary" style="width: auto; padding: 12px 30px; background-color: var(--success);">📥 Download Invoice</a>
+            <a href="/user/my-orders" class="btn btn-outline" style="width: auto; padding: 12px 30px;">📦 View My Orders</a>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 SmartCart Systems. Secure invoice receipt generated dynamically.
+    </footer>
+
+</body>
+</html>

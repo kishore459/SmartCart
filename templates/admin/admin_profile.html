@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile - SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛒 SmartCart Dashboard</div>
+        <nav>
+            <span style="font-weight: 500; color: var(--text-muted);">Admin Mode</span>
+            <a href="/admin-logout" class="btn btn-outline btn-sm">Logout</a>
+        </nav>
+    </header>
+
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px;">Management</h3>
+            <ul class="sidebar-menu">
+                <li><a href="/admin-dashboard">📊 Overview</a></li>
+                <li><a href="/admin/item-list">📦 View Products</a></li>
+                <li><a href="/admin/add-item">➕ Add Product</a></li>
+                <li><a href="/admin/profile" class="active">👤 Profile Settings</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-container">
+                  {% for category, message in messages %}
+                    <div class="flash-message success">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div class="admin-form-card" style="max-width: 650px;">
+                <h2 style="margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">Admin Profile Settings</h2>
+
+                <form method="POST" action="/admin/profile" enctype="multipart/form-data">
+                    
+                    <!-- Profile Picture Block -->
+                    <div class="avatar-wrapper">
+                        {% if admin.profile_image %}
+                            <img src="/static/uploads/admin_profiles/{{ admin.profile_image }}" alt="Profile Avatar" class="profile-avatar">
+                        {% else %}
+                            <div class="profile-avatar" style="display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: var(--text-muted); font-size: 32px; font-weight: bold;">
+                                {{ admin.name[0]|upper if admin.name else 'A' }}
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 12px; margin-top: 8px;">No Profile Image Set</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ admin.name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address:</label>
+                        <input type="email" id="email" name="email" class="form-control" value="{{ admin.email }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">New Password (optional):</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Leave blank to keep current password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile_image">Upload New Profile Image (optional):</label>
+                        <input type="file" id="profile_image" name="profile_image" accept="image/*" class="form-control" style="padding: 8px;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: auto; padding: 12px 30px; margin-top: 10px;">Update Profile</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
