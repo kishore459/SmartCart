@@ -60,6 +60,9 @@
                     <table>
                         <thead>
                             <tr>
+                                <th class="cart-select-column">
+                                    <input id="select-all-cart-items" class="cart-item-checkbox" type="checkbox" aria-label="Select all cart items">
+                                </th>
                                 <th style="width: 100px;">Product</th>
                                 <th>Name</th>
                                 <th>Unit Price</th>
@@ -71,6 +74,9 @@
                         <tbody>
                             {% for pid, item in cart.items() %}
                             <tr>
+                                <td class="cart-select-column">
+                                    <input class="cart-item-checkbox cart-item-selector" type="checkbox" name="selected_items" value="{{ pid }}" aria-label="Select {{ item.name }}">
+                                </td>
                                 <td>
                                     <div style="width: 70px; height: 70px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
                                         <img src="/static/uploads/product_images/{{ item.image }}" style="max-width: 100%; max-height: 100%; object-fit: contain; padding: 4px;">
@@ -128,6 +134,24 @@
     <footer>
         &copy; 2026 SmartCart Systems. Crafted for visual and operational excellence.
     </footer>
+
+    <script>
+        const selectAllCartItems = document.getElementById('select-all-cart-items');
+        const cartItemSelectors = document.querySelectorAll('.cart-item-selector');
+
+        selectAllCartItems?.addEventListener('change', () => {
+            cartItemSelectors.forEach((checkbox) => {
+                checkbox.checked = selectAllCartItems.checked;
+            });
+        });
+
+        cartItemSelectors.forEach((checkbox) => {
+            checkbox.addEventListener('change', () => {
+                selectAllCartItems.checked = cartItemSelectors.length > 0 && [...cartItemSelectors].every((item) => item.checked);
+                selectAllCartItems.indeterminate = [...cartItemSelectors].some((item) => item.checked) && !selectAllCartItems.checked;
+            });
+        });
+    </script>
 
 </body>
 </html>
