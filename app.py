@@ -32,7 +32,7 @@ def add_customer_shell(response):
     if response.mimetype == 'text/html' and not is_download:
         page = response.get_data(as_text=True)
         if is_customer_page:
-            shell_script = '<script src="/static/js/customer_shell.js?v=2"></script>'
+            shell_script = '<script src="/static/js/customer_shell.js?v=3"></script>'
             if shell_script not in page:
                 page = page.replace('</body>', shell_script + '</body>')
         elif '<footer' not in page.lower():

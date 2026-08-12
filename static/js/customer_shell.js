@@ -21,7 +21,7 @@
             <button type="submit" aria-label="Search">&#128269;</button>
         </form>
         <nav class="customer-shell-actions" aria-label="Account actions">
-            <a class="${isActive('/user/cart')}" href="/user/cart">&#128722; Cart <span id="cart-count" class="cart-badge">${document.querySelector('#cart-count')?.textContent.trim() || '0'}</span></a>
+            <a class="${isActive('/user/cart')}" href="/user/cart" aria-label="View cart">Cart <span id="cart-count" class="cart-badge">${document.querySelector('#cart-count')?.textContent.trim() || '0'}</span></a>
             <a class="${isActive('/user/profile')}" href="/user/profile">&#128100; Profile</a>
             <a class="customer-shell-logout" href="/user-logout">Logout</a>
         </nav>`;
