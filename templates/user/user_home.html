@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Shop SmartCart products.">
     <title>SmartCart | Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=mobile-nav-3">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=mobile-nav-4">
 </head>
 <body>
     <header class="store-header">
@@ -25,7 +25,9 @@
             </form>
         </div>
         <div class="store-actions">
-            <a class="store-cart" href="{{ url_for('view_cart') }}">&#128722; Cart <span id="cart-count" class="cart-badge">{{ session.get('cart')|length if session.get('cart') else 0 }}</span></a>
+            <a class="store-cart" href="{{ url_for('view_cart') }}" aria-label="View cart">
+                Cart <span id="cart-count" class="cart-badge">{{ session.get('cart')|length if session.get('cart') else 0 }}</span>
+            </a>
             <a class="store-profile" href="{{ url_for('user_profile') }}" title="Profile settings">
                 {% if session.get('user_image') %}
                     <img src="{{ url_for('static', filename='uploads/user_profiles/' ~ session.get('user_image')) }}" alt="">

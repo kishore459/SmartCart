@@ -1011,6 +1011,7 @@ footer {
         border-radius: 9px;
         font-size: 13px;
         font-weight: 600;
+        white-space: nowrap;
     }
 
     .catalog-mobile-cart { order: 2; }
