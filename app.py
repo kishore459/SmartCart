@@ -46,7 +46,7 @@ def add_customer_shell(response):
         if responsive_script not in page:
             page = page.replace('</body>', responsive_script + '</body>')
         # Cache-bust shared CSS after responsive UI updates.
-        page = page.replace('/static/css/style.css"', '/static/css/style.css?v=mobile-menu-2"')
+        page = page.replace('/static/css/style.css"', '/static/css/style.css?v=mobile-menu-3"')
         response.set_data(page)
     return response
 

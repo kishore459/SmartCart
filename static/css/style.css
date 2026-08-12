@@ -888,8 +888,8 @@ footer {
     .customer-shell-logo { font-size: 22px; }
     .customer-shell-actions > a:not(.customer-shell-logout) { font-size: 0; }
     .customer-shell-actions > a:not(.customer-shell-logout) .cart-badge { font-size: 11px; }
-    .customer-shell-actions > a:not(.customer-shell-logout)::before { font-size: 13px; content: 'Account'; }
-    .customer-shell-actions > a:first-child::before { content: 'Cart'; }
+    .customer-shell-actions > a:nth-child(2)::before { font-size: 13px; content: 'Account'; }
+    .customer-shell-actions > a:first-child { font-size: 13px; }
     .customer-shell-actions .cart-badge { font-size: 11px; }
     .customer-shell-nav a { font-size: 13px; }
     .auth-card, .checkout-card, .checkout-summary { padding: 22px 17px; }
