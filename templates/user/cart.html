@@ -60,9 +60,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th class="cart-select-column">
-                                    <input id="select-all-cart-items" class="cart-item-checkbox" type="checkbox" aria-label="Select all cart items">
-                                </th>
+                                <th class="cart-select-column" aria-label="Select item"></th>
                                 <th style="width: 100px;">Product</th>
                                 <th>Name</th>
                                 <th>Unit Price</th>
@@ -134,24 +132,6 @@
     <footer>
         &copy; 2026 SmartCart Systems. Crafted for visual and operational excellence.
     </footer>
-
-    <script>
-        const selectAllCartItems = document.getElementById('select-all-cart-items');
-        const cartItemSelectors = document.querySelectorAll('.cart-item-selector');
-
-        selectAllCartItems?.addEventListener('change', () => {
-            cartItemSelectors.forEach((checkbox) => {
-                checkbox.checked = selectAllCartItems.checked;
-            });
-        });
-
-        cartItemSelectors.forEach((checkbox) => {
-            checkbox.addEventListener('change', () => {
-                selectAllCartItems.checked = cartItemSelectors.length > 0 && [...cartItemSelectors].every((item) => item.checked);
-                selectAllCartItems.indeterminate = [...cartItemSelectors].some((item) => item.checked) && !selectAllCartItems.checked;
-            });
-        });
-    </script>
 
 </body>
 </html>
