@@ -1165,6 +1165,24 @@ DELIVERY_OPTIONS = {
 }
 
 
+def get_checkout_cart(cart):
+    """Return only the cart items selected for the current checkout."""
+    selected_ids = session.get('checkout_item_ids', [])
+    return {pid: cart[pid] for pid in selected_ids if pid in cart}
+
+
+def remove_checked_out_items(cart):
+    """Keep any cart items that were not part of the completed order."""
+    for pid in session.get('checkout_item_ids', []):
+        cart.pop(pid, None)
+    if cart:
+        session['cart'] = cart
+    else:
+        session.pop('cart', None)
+    session.pop('checkout_item_ids', None)
+    session.modified = True
+
+
 def create_order_record(user_id, cart, checkout_details, payment_method, payment_status,
                         razorpay_order_id, razorpay_payment_id):
     """Store the confirmed cart, payment, and delivery details as one transaction."""
@@ -1201,10 +1219,27 @@ def user_checkout():
     if 'user_id' not in session:
         flash("Please login first!", "danger")
         return redirect('/user-login')
-    cart = session.get('cart', {})
-    if not cart:
+    full_cart = session.get('cart', {})
+    if not full_cart:
         flash("Your cart is empty! Add products first.", "danger")
         return redirect('/user/products')
+
+    if request.method == 'GET':
+        selected_ids = request.args.getlist('selected_items')
+        if selected_ids:
+            # Ignore stale/tampered IDs rather than trusting them.
+            selected_ids = [pid for pid in selected_ids if pid in full_cart]
+            if not selected_ids:
+                flash("Select at least one item from your cart.", "danger")
+                return redirect('/user/cart')
+            session['checkout_item_ids'] = selected_ids
+        elif 'checkout_item_ids' not in session:
+            session['checkout_item_ids'] = list(full_cart.keys())
+
+    cart = get_checkout_cart(full_cart)
+    if not cart:
+        flash("Select at least one item from your cart.", "danger")
+        return redirect('/user/cart')
 
     item_total = sum(item['price'] * item['quantity'] for item in cart.values())
     if request.method == 'GET':
@@ -1232,7 +1267,7 @@ def user_checkout():
         try:
             order_db_id = create_order_record(session['user_id'], cart, details, 'cash_on_delivery',
                 'cash_on_delivery', f"COD-{uuid.uuid4().hex[:12].upper()}", 'Not applicable')
-            session.pop('cart', None)
+            remove_checked_out_items(full_cart)
             session.pop('checkout_details', None)
             flash("Order placed successfully. Please pay cash when it is delivered.", "success")
             return redirect(url_for('order_success', order_db_id=order_db_id))
@@ -1251,7 +1286,7 @@ def user_pay():
         flash("Please login first!", "danger")
         return redirect('/user-login')
 
-    cart = session.get('cart', {})
+    cart = get_checkout_cart(session.get('cart', {}))
     if not cart:
         flash("Your cart is empty! Add products first.", "danger")
         return redirect('/user/products')
@@ -1331,7 +1366,8 @@ def verify_payment():
 
     # Signature is authenticated! Let's insert into database.
     user_id = session['user_id']
-    cart = session.get('cart', {})
+    full_cart = session.get('cart', {})
+    cart = get_checkout_cart(full_cart)
     checkout_details = session.get('checkout_details')
 
     if not cart or not checkout_details:
@@ -1342,8 +1378,8 @@ def verify_payment():
         order_db_id = create_order_record(user_id, cart, checkout_details, 'online', 'paid',
                                           razorpay_order_id, razorpay_payment_id)
 
-        # Pop session cart contents
-        session.pop('cart', None)
+        # Remove only the items included in this checkout.
+        remove_checked_out_items(full_cart)
         session.pop('razorpay_order_id', None)
         session.pop('checkout_details', None)
 

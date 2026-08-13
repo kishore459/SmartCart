@@ -54,7 +54,7 @@
                 <a href="/user/products" class="btn btn-primary" style="width: auto; padding: 12px 30px;">Shop Catalog Now</a>
             </div>
         {% else %}
-            <div class="cart-wrapper">
+            <form class="cart-wrapper" method="GET" action="{{ url_for('user_checkout') }}" id="cart-selection-form">
                 <!-- Cart Items Table -->
                 <div class="table-responsive" style="margin-bottom: 0;">
                     <table>
@@ -121,11 +121,11 @@
                     </div>
 
                     <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px;">
-                        <a href="{{ url_for('user_checkout') }}" class="btn btn-primary">Proceed to Checkout</a>
+                        <button type="submit" class="btn btn-primary">Checkout selected items</button>
                         <a href="/user/products" class="btn btn-outline">🛍 Continue Shopping</a>
                     </div>
                 </aside>
-            </div>
+            </form>
         {% endif %}
     </div>
 
@@ -133,5 +133,17 @@
         &copy; 2026 SmartCart Systems. Crafted for visual and operational excellence.
     </footer>
 
+    <script>
+        (() => {
+            const form = document.getElementById('cart-selection-form');
+            const checkboxes = [...document.querySelectorAll('.cart-item-selector')];
+            form.addEventListener('submit', event => {
+                if (!checkboxes.some(box => box.checked)) {
+                    event.preventDefault();
+                    alert('Select at least one item before checking out.');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
