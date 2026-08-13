@@ -73,7 +73,7 @@
                             {% for pid, item in cart.items() %}
                             <tr>
                                 <td class="cart-select-column">
-                                    <input class="cart-item-checkbox cart-item-selector" type="checkbox" name="selected_items" value="{{ pid }}" aria-label="Select {{ item.name }}">
+                                    <input class="cart-item-checkbox cart-item-selector" type="checkbox" name="selected_items" value="{{ pid }}" checked data-subtotal="{{ item.price * item.quantity }}" aria-label="Select {{ item.name }}">
                                 </td>
                                 <td>
                                     <div style="width: 70px; height: 70px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
@@ -107,7 +107,7 @@
                     
                     <div class="summary-row">
                         <span style="color: var(--text-muted);">Cart Subtotal:</span>
-                        <span>₹{{ "%.2f"|format(grand_total) }}</span>
+                        <span id="cart-subtotal">₹{{ "%.2f"|format(grand_total) }}</span>
                     </div>
 
                     <div class="summary-row">
@@ -117,7 +117,7 @@
 
                     <div class="summary-row total">
                         <span>Grand Total:</span>
-                        <span>₹{{ "%.2f"|format(grand_total) }}</span>
+                        <span id="cart-grand-total">₹{{ "%.2f"|format(grand_total) }}</span>
                     </div>
 
                     <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px;">
@@ -137,12 +137,34 @@
         (() => {
             const form = document.getElementById('cart-selection-form');
             const checkboxes = [...document.querySelectorAll('.cart-item-selector')];
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const grandTotalEl = document.getElementById('cart-grand-total');
+
+            function updateSummary() {
+                let total = 0;
+                checkboxes.forEach(box => {
+                    if (box.checked) {
+                        total += parseFloat(box.dataset.subtotal || 0);
+                    }
+                });
+                const formatted = '₹' + total.toFixed(2);
+                if (subtotalEl) subtotalEl.textContent = formatted;
+                if (grandTotalEl) grandTotalEl.textContent = formatted;
+            }
+
+            checkboxes.forEach(box => {
+                box.addEventListener('change', updateSummary);
+            });
+
             form.addEventListener('submit', event => {
                 if (!checkboxes.some(box => box.checked)) {
                     event.preventDefault();
                     alert('Select at least one item before checking out.');
                 }
             });
+
+            // Initialize on load to ensure sync with browser cache
+            updateSummary();
         })();
     </script>
 </body>

@@ -8,10 +8,25 @@
         <div class="checkout-layout">
             <form method="POST" class="checkout-card">
                 <h1>Delivery details</h1><p class="checkout-note">Enter the address where you would like your order delivered.</p>
-                <div class="form-group"><label for="customer_name">Full name</label><input class="form-control" id="customer_name" name="customer_name" value="{{ saved_details.get('customer_name', session.get('user_name', '')) }}" required></div>
-                <div class="form-group"><label for="customer_phone">Mobile number</label><input class="form-control" id="customer_phone" name="customer_phone" value="{{ saved_details.get('customer_phone', '') }}" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required></div>
-                <div class="form-group"><label for="delivery_address">Complete delivery address</label><textarea class="form-control" id="delivery_address" name="delivery_address" placeholder="House / flat number, street, area, city, state" required>{{ saved_details.get('delivery_address', '') }}</textarea></div>
-                <div class="form-group"><label for="pin_code">PIN code</label><input class="form-control" id="pin_code" name="pin_code" value="{{ saved_details.get('pin_code', '') }}" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></div>
+                <div class="form-group">
+                    <label for="customer_name">Full name</label>
+                    <input class="form-control" id="customer_name" name="customer_name" value="{{ saved_details.get('customer_name', session.get('user_name', '')) }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="customer_phone">Mobile number</label>
+                    <input class="form-control" id="customer_phone" name="customer_phone" value="{{ saved_details.get('customer_phone', '') }}" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required>
+                    <small style="display: block; color: var(--text-muted); font-size: 12px; margin-top: 4px;">Must be exactly 10 digits (e.g. 9876543210)</small>
+                </div>
+                <div class="form-group">
+                    <label for="delivery_address">Complete delivery address</label>
+                    <textarea class="form-control" id="delivery_address" name="delivery_address" placeholder="House / flat number, street, area, city, state" minlength="10" required>{{ saved_details.get('delivery_address', '') }}</textarea>
+                    <small style="display: block; color: var(--text-muted); font-size: 12px; margin-top: 4px;">Minimum 10 characters required for delivery verification.</small>
+                </div>
+                <div class="form-group">
+                    <label for="pin_code">PIN code</label>
+                    <input class="form-control" id="pin_code" name="pin_code" value="{{ saved_details.get('pin_code', '') }}" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
+                    <small style="display: block; color: var(--text-muted); font-size: 12px; margin-top: 4px;">Must be exactly 6 digits (e.g. 560001)</small>
+                </div>
                 <div class="form-group"><label for="delivery_type">Delivery option</label><select class="form-control" id="delivery_type" name="delivery_type" onchange="updateTotal()">{% for key, option in delivery_options.items() %}<option value="{{ key }}" data-fee="{{ option.fee }}" {% if saved_details.get('delivery_type', 'standard') == key %}selected{% endif %}>{{ option.label }} — {% if option.fee %}&#8377;{{ option.fee }}{% else %}Free{% endif %}</option>{% endfor %}</select></div>
                 <fieldset class="payment-options"><legend>Payment method</legend><label><input type="radio" name="payment_method" value="online" checked> Pay online securely with Razorpay</label><label><input type="radio" name="payment_method" value="cash_on_delivery"> Cash on delivery</label></fieldset>
                 <button type="submit" class="btn btn-primary">Place order</button>

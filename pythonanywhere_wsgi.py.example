@@ -3,11 +3,25 @@
 import os
 import sys
 
+# Add your project directory to the sys.path
 project_home = '/home/YOUR_USERNAME/SMARTCART-2'
 if project_home not in sys.path:
     sys.path.insert(0, project_home)
 
-# Keep the SQLite data file in your home directory so it survives code updates.
+# Keep the SQLite database in the home directory so it survives updates and redeploys
 os.environ['SMARTCART_DATABASE_PATH'] = '/home/YOUR_USERNAME/smartcart.db'
 
+# Define your secrets here (these are private to your account and not in git)
+os.environ['SECRET_KEY'] = 'your-super-secure-random-key'
+
+# Email / SMTP Secrets (if using OTP and email notification features)
+os.environ['MAIL_USERNAME'] = 'your-email@gmail.com'
+os.environ['MAIL_PASSWORD'] = 'your-gmail-app-password'
+
+# Razorpay Keys (if using payments)
+os.environ['RAZORPAY_KEY_ID'] = 'rzp_live_yourkeyid'
+os.environ['RAZORPAY_KEY_SECRET'] = 'yourrazorpaysecretkey'
+
+# Import the Flask application object as "application"
 from app import app as application
+

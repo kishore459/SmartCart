@@ -100,6 +100,7 @@
                         <div class="product-price">₹{{ "%.2f"|format(product.price) }}</div>
                         <div class="product-actions">
                             <a href="/user/product/{{ product.product_id }}" class="btn btn-outline btn-sm" style="flex-grow: 1;">Details</a>
+                            <a href="{{ url_for('buy_now', product_id=product.product_id) }}" class="btn btn-secondary btn-sm" style="flex-grow: 1;">Buy Now</a>
                             <button onclick="addToCart({{ product.product_id }})" class="btn btn-primary btn-sm" style="flex-grow: 1;">Add to Cart</button>
                         </div>
                     </div>

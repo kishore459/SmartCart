@@ -1103,6 +1103,48 @@ def add_to_cart(product_id):
 
 
 # ---------------------------------------------------------
+# USER ROUTE: BUY NOW (ADD & CHECKOUT)
+# ---------------------------------------------------------
+@app.route('/user/buy-now/<int:product_id>')
+def buy_now(product_id):
+    if 'user_id' not in session:
+        flash("Please login first!", "danger")
+        return redirect('/user-login')
+
+    if 'cart' not in session:
+        session['cart'] = {}
+
+    cart = session['cart']
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM products WHERE product_id=%s", (product_id,))
+    product = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if not product:
+        flash("Product not found.", "danger")
+        return redirect(request.referrer or '/user/products')
+
+    pid = str(product_id)
+
+    if pid not in cart:
+        cart[pid] = {
+            'name': product['name'],
+            'price': float(product['price']),
+            'image': product['image'],
+            'quantity': 1
+        }
+        session['cart'] = cart
+        session.modified = True
+
+    # Redirect to checkout with only this item selected
+    return redirect(url_for('user_checkout', selected_items=[pid]))
+
+
+# ---------------------------------------------------------
+
 # USER ROUTE: VIEW SHOPPING CART
 # ---------------------------------------------------------
 @app.route('/user/cart')
@@ -1261,15 +1303,17 @@ def user_checkout():
         'pin_code': request.form.get('pin_code', '').strip(),
         'delivery_type': request.form.get('delivery_type', 'standard'),
     }
+    # Save inputs in session first so they are not wiped out if validation fails
+    session['checkout_details'] = details
+    session.modified = True
+    
     payment_method = request.form.get('payment_method', '')
     if (not details['customer_name'] or not details['customer_phone'].isdigit() or len(details['customer_phone']) != 10 or
             len(details['delivery_address']) < 10 or not details['pin_code'].isdigit() or len(details['pin_code']) != 6 or
             details['delivery_type'] not in DELIVERY_OPTIONS or payment_method not in {'online', 'cash_on_delivery'}):
-        flash("Enter a valid name, 10-digit phone number, complete address, and 6-digit PIN code.", "danger")
+        flash("Validation failed! Please enter a valid name, 10-digit mobile number, complete address (minimum 10 characters), and 6-digit PIN code.", "danger")
         return redirect('/user/checkout')
 
-    session['checkout_details'] = details
-    session.modified = True
     if payment_method == 'cash_on_delivery':
         try:
             order_db_id = create_order_record(session['user_id'], cart, details, 'cash_on_delivery',

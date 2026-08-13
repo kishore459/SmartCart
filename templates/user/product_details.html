@@ -54,6 +54,7 @@
 
                 <div class="detail-actions">
                     <button onclick="addToCart({{ product.product_id }})" class="btn btn-primary" style="padding: 14px 30px; flex-grow: 1;">🛒 Add to Cart</button>
+                    <a href="{{ url_for('buy_now', product_id=product.product_id) }}" class="btn btn-secondary" style="padding: 14px 30px; flex-grow: 1;">⚡ Buy Now</a>
                     <a href="/user/cart" class="btn btn-outline" style="padding: 14px 20px; width: auto;">Go to Cart</a>
                 </div>
             </div>
