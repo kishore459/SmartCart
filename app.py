@@ -163,13 +163,20 @@ def initialize_database():
     if database_directory:
         os.makedirs(database_directory, exist_ok=True)
     schema_path = os.path.join(BASE_DIR, 'database', 'schema_sqlite.sql')
+    seed_path = os.path.join(BASE_DIR, 'database', 'seeds', 'starter_catalog.sql')
     with sqlite3.connect(config.DATABASE_PATH) as connection:
         connection.execute('PRAGMA foreign_keys = ON')
         with open(schema_path, encoding='utf-8') as schema_file:
             connection.executescript(schema_file.read())
+        
+        # Automatically populate the starter product catalog if seed file exists
+        if os.path.exists(seed_path):
+            with open(seed_path, encoding='utf-8') as seed_file:
+                connection.executescript(seed_file.read())
 
 
 initialize_database()
+
 
 
 # =============================================================================

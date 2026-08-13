@@ -1,7 +1,16 @@
 -- Starter catalog for SmartCart. The image files belong in static/uploads/product_images/.
-UPDATE products SET name='Wireless Headphones', description='Comfortable over-ear headphones with immersive sound.', category='Electronics', price=8999.00, image='wireless-headphones.jpg' WHERE product_id=1;
-UPDATE products SET name='Ultrabook Laptop', description='Lightweight laptop for work, learning, and entertainment.', category='Electronics', price=74999.00, image='ultrabook-laptop.jpg' WHERE product_id=2;
-UPDATE products SET name='Running Shoes', description='Breathable everyday running shoes with a cushioned sole.', category='Fashion', price=4999.00, image='running-shoes.jpg' WHERE product_id=3;
+INSERT INTO products (product_id, name, description, category, price, image)
+SELECT 1, 'Wireless Headphones', 'Comfortable over-ear headphones with immersive sound.', 'Electronics', 8999.00, 'wireless-headphones.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM products WHERE product_id=1);
+
+INSERT INTO products (product_id, name, description, category, price, image)
+SELECT 2, 'Ultrabook Laptop', 'Lightweight laptop for work, learning, and entertainment.', 'Electronics', 74999.00, 'ultrabook-laptop.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM products WHERE product_id=2);
+
+INSERT INTO products (product_id, name, description, category, price, image)
+SELECT 3, 'Running Shoes', 'Breathable everyday running shoes with a cushioned sole.', 'Fashion', 4999.00, 'running-shoes.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM products WHERE product_id=3);
+
 
 INSERT INTO products (name, description, category, price, image)
 SELECT 'Smart Watch', 'Modern smart watch for activity and notification tracking.', 'Accessories', 12999.00, 'smartwatch.jpg'
