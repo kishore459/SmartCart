@@ -5,7 +5,6 @@ __pycache__/
 *.py[cod]
 
 # Local configuration and secrets
-config.py
 .env
 .env.*
 
