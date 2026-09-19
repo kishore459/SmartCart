@@ -1,131 +1,205 @@
-# SmartCart
+# SmartCart 🛒
 
-SmartCart is a full-stack e-commerce web application built with **Python** and
-**Flask**. It provides separate customer and administrator experiences for
-browsing products, managing a cart, placing orders, and handling payments.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-brightgreen?style=for-the-badge&logo=render)](https://smartcart-lp8d.onrender.com)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/kishore459/SmartCart)
+[![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-Web%20Framework-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Razorpay](https://img.shields.io/badge/Razorpay-Payments-02042B?style=for-the-badge&logo=razorpay&logoColor=3395FF)](https://razorpay.com/)
 
-## Features
+> **A full-stack e-commerce web application built with Python Flask and MySQL / SQLite, featuring user authentication, admin management, product management, image uploads, shopping cart, and secure online payments.**
 
-### Customer portal
+---
 
-- Register, sign in, sign out, and manage a profile image.
-- Reset a forgotten password using an email OTP.
-- Browse products, view product details, and add products to a session-based cart.
-- Update cart quantities and remove cart items.
-- Provide checkout and delivery details, place orders, and view order history.
-- Pay online through Razorpay and download an invoice after ordering.
+## 🌐 Live Demo
 
-### Administrator portal
+- **Application URL:** [https://smartcart-lp8d.onrender.com](https://smartcart-lp8d.onrender.com)
+- **Source Code:** [https://github.com/kishore459/SmartCart](https://github.com/kishore459/SmartCart)
 
-- Sign up with email OTP verification and sign in securely.
-- View the administration dashboard.
-- Create, view, update, and delete product listings.
-- Upload product images and update the administrator profile image.
+---
 
-## Technology stack
+## ✨ Features
 
-- **Backend:** Python, Flask
-- **Database:** SQLite (with MySQL-to-SQLite migration support)
-- **Authentication:** Flask sessions and `bcrypt` password hashing
-- **Email:** Flask-Mail with SMTP
-- **Payments:** Razorpay
-- **Frontend:** Jinja templates, HTML, CSS, and JavaScript
+### 🛍️ Customer Portal
+- **User Authentication:** Sign up, sign in, and sign out with `bcrypt` encrypted passwords.
+- **Password Recovery:** Reset forgotten passwords securely using an email OTP verification flow.
+- **Product Catalog:** Browse products with categories, search, view high-resolution images, pricing, and stock details.
+- **Session-based Cart:** Add items to cart, adjust quantities dynamically, and remove items with instant total calculations.
+- **Checkout & Orders:** Enter shipping/delivery address, place orders, and review past order history with tracking status.
+- **Online Payment:** Integrated **Razorpay** payment gateway for secure online transactions.
+- **Invoices:** Instant order invoice generation and download after payment confirmation.
 
-## Project structure
+### 🛡️ Administrator Portal
+- **Secure Admin Access:** Administrator sign up and login with email OTP verification.
+- **Analytics Dashboard:** Overview of products, orders, and customer activity.
+- **Product Management (CRUD):** Add new items, update product details/pricing, upload product images, and delete listings.
+- **Profile & Image Management:** Upload and manage admin profile images.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| **Backend** | Python 3, Flask, Jinja2 Templates, Gunicorn |
+| **Database** | SQLite (default / production-ready), MySQL (supported via schema & migration scripts) |
+| **Authentication & Security** | Flask Sessions, `bcrypt` password hashing, OTP email verification |
+| **Email Services** | `Flask-Mail` via SMTP (Gmail / Custom SMTP) |
+| **Payment Gateway** | Razorpay Python SDK & Checkout JS |
+| **Frontend** | HTML5, CSS3, JavaScript |
+| **Deployment** | Render, PythonAnywhere |
+
+---
+
+## 📁 Project Structure
 
 ```text
 SmartCart/
-├── app.py                         # Flask routes, business logic, and application entry point
-├── config.example.py              # Safe configuration template
-├── requirements.txt               # Application dependencies
+├── app.py                         # Application entry point, routes, and business logic
+├── config.py                      # Application configuration and environment variables
+├── config.example.py              # Configuration template with placeholder credentials
+├── requirements.txt               # Python package dependencies (Flask, bcrypt, razorpay, etc.)
 ├── DEPLOY_PYTHONANYWHERE.md       # PythonAnywhere deployment guide
 ├── pythonanywhere_wsgi.py.example # WSGI configuration template
 ├── database/
-│   ├── schema_sqlite.sql           # SQLite schema
-│   ├── schema.sql                  # Original MySQL schema
-│   ├── migrate_mysql_to_sqlite.py  # One-time migration utility
-│   ├── migrations/                 # Incremental database changes
-│   └── seeds/                      # Starter product catalog
+│   ├── schema_sqlite.sql          # SQLite schema
+│   ├── schema.sql                 # MySQL schema
+│   ├── migrate_mysql_to_sqlite.py # MySQL to SQLite data migration script
+│   ├── migrations/                # Database migration scripts
+│   ├── seeds/                     # Starter catalog seeds
+│   └── smartcart.db               # SQLite database file
 ├── static/
-│   ├── css/style.css               # Application styling
-│   ├── js/                         # Navigation and customer UI scripts
-│   └── uploads/product_images/     # Starter product images
+│   ├── css/
+│   │   └── style.css              # Custom styling & responsive layouts
+│   ├── js/                        # Client-side scripts & interactivity
+│   └── uploads/
+│       └── product_images/        # Uploaded product images
 └── templates/
-    ├── admin/                      # Administrator pages
-    └── user/                       # Customer pages
+    ├── admin/                     # Admin portal templates
+    └── user/                      # Customer-facing storefront templates
 ```
 
-## Getting started
+---
 
-### 1. Clone the repository
+## 🚀 Getting Started
+
+Follow these instructions to run the application locally on your machine.
+
+### Prerequisites
+- Python 3.8+ installed ([python.org](https://www.python.org/))
+- Git installed ([git-scm.com](https://git-scm.com/))
+
+---
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/kishore459/SmartCart.git
 cd SmartCart
 ```
 
-### 2. Create and activate a virtual environment
+### 2. Create and Activate Virtual Environment
 
-```bash
-python -m venv venv
-```
-
-On Windows:
-
+**On Windows:**
 ```powershell
+python -m venv venv
 .\venv\Scripts\Activate.ps1
 ```
 
-On macOS/Linux:
-
+**On macOS / Linux:**
 ```bash
+python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure local secrets
+### 4. Configure Application Secrets
 
-Copy `config.example.py` to `config.py`, then set your own Flask secret key,
-SMTP credentials, and Razorpay test keys.
+Copy `config.example.py` to create your local `config.py`:
 
-```bash
+**On Windows:**
+```powershell
 copy config.example.py config.py
 ```
 
-For macOS/Linux, use `cp config.example.py config.py`.
+**On macOS / Linux:**
+```bash
+cp config.example.py config.py
+```
 
-> `config.py` is intentionally ignored by Git. Never commit passwords, API keys,
-> or production credentials.
+Edit `config.py` with your credentials:
+```python
+SECRET_KEY = "your-random-secret-key"
 
-### 5. Run the application
+# Email Configuration (for OTP verification)
+MAIL_SERVER = "smtp.gmail.com"
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_USERNAME = "your-email@gmail.com"
+MAIL_PASSWORD = "your-app-password"
+
+# Razorpay Test Credentials
+RAZORPAY_KEY_ID = "rzp_test_xxxxxx"
+RAZORPAY_KEY_SECRET = "your-razorpay-secret"
+```
+
+> ⚠️ **Note:** `config.py` is included in `.gitignore` to prevent leaking private credentials.
+
+### 5. Run the Application
 
 ```bash
 python app.py
 ```
 
-Open `http://127.0.0.1:5000` in your browser. The SQLite database and required
-tables are created automatically when the application starts.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser. The database and starter tables are initialized automatically on startup.
 
-## Database notes
+---
 
-The current application uses SQLite. Its database file is local-only and not
-committed to this repository. SQL schemas, migrations, and starter catalog data
-are included in `database/`. If you have an existing MySQL database, use
-`database/migrate_mysql_to_sqlite.py` to import its data; see
-[DEPLOY_PYTHONANYWHERE.md](DEPLOY_PYTHONANYWHERE.md) for details.
+## ☁️ Deployment
 
-## Deployment
+### Deploying on Render (Live)
 
-Deployment instructions for PythonAnywhere are available in
-[DEPLOY_PYTHONANYWHERE.md](DEPLOY_PYTHONANYWHERE.md).
+1. Create a new **Web Service** on [Render](https://render.com/).
+2. Connect your GitHub repository: `https://github.com/kishore459/SmartCart`.
+3. Set the following build and start parameters:
+   - **Environment:** `Python 3`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `gunicorn app:app`
+4. In the **Environment Variables** section, configure:
+   - `SECRET_KEY`
+   - `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USE_TLS`, `MAIL_USERNAME`, `MAIL_PASSWORD`
+   - `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`
+5. Deploy the service. Your live application will be available at your Render URL (e.g., `https://smartcart-lp8d.onrender.com`).
 
-## Security
+### Deploying on PythonAnywhere
 
-- Keep `config.py`, `.env` files, and database files private.
-- Use environment-specific credentials for email and Razorpay.
-- Rotate any credential that was previously shared or committed.
+Detailed step-by-step instructions for deploying to PythonAnywhere are available in [DEPLOY_PYTHONANYWHERE.md](DEPLOY_PYTHONANYWHERE.md).
+
+---
+
+## 🗄️ Database Management
+
+- The project defaults to **SQLite** for ease of development and single-server deployments.
+- To use an existing **MySQL** database or migrate existing data into SQLite, run the helper utility:
+  ```bash
+  python database/migrate_mysql_to_sqlite.py
+  ```
+
+---
+
+## 🔒 Security Best Practices
+
+- Always keep sensitive credentials out of version control.
+- Passwords are encrypted with `bcrypt` before storage.
+- Admin routes and checkout endpoints are protected with session validations.
+- For production, configure HTTPS and set appropriate CORS/cookie flags.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
